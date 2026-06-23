@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from html import escape
 
-from .engine import best_path, frontier_nodes
+from .engine import best_path, frontier_nodes, select_frontier
 from .model import Node, Tree, children_of
 
 
@@ -39,6 +39,25 @@ def render_path(tree: Tree) -> str:
         metadata = _evidence_metadata(node)
         if metadata:
             lines.append(f"   {metadata}")
+    return "\n".join(lines) + "\n"
+
+
+def render_next(tree: Tree) -> str:
+    selected = select_frontier(tree)
+    path = best_path(tree)
+    lines = [
+        f"Selected frontier: {selected.id}",
+        f"Frontier content: {selected.content}",
+        f"Recommended action: expand {selected.id} with 2-3 concrete, verifiable child nodes",
+        f"Current best path: {' -> '.join(node.id for node in path)}",
+        "Best path evidence:",
+    ]
+    for node in path:
+        if node.evidence:
+            lines.append(f"- {node.id}: {node.evidence}")
+        metadata = _evidence_metadata(node)
+        if metadata:
+            lines.append(f"  {metadata}")
     return "\n".join(lines) + "\n"
 
 

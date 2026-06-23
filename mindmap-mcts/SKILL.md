@@ -48,21 +48,29 @@ Never hand-edit rendered markdown as the truth source. The `.tree.json` file is 
 
 ## Per-Round Loop
 
-1. Select the next frontier:
+1. Ask the CLI for the next recommended action:
+
+```bash
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" next <task-name>.tree.json
+```
+
+Use this to orient before making new changes to the tree.
+
+2. Select the next frontier directly when you need only the node id:
 
 ```bash
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" select <task-name>.tree.json
 ```
 
-2. Expand the selected node with 2 or 3 child nodes. Children must be mutually exclusive, concrete, and verifiable.
+3. Expand the selected node with 2 or 3 child nodes. Children must be mutually exclusive, concrete, and verifiable.
 
 ```bash
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" add <task-name>.tree.json --parent <node-id> --type hypothesis --content "<specific hypothesis>"
 ```
 
-3. Evaluate each new child using the cheapest real probe available: read code, grep a symbol, run a focused test, inspect a log, or check a config.
+4. Evaluate each new child using the cheapest real probe available: read code, grep a symbol, run a focused test, inspect a log, or check a config.
 
-4. Record value and evidence:
+5. Record value and evidence:
 
 ```bash
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" eval <task-name>.tree.json --id <node-id> --value <0-to-1> --evidence "<short evidence>" --probe-type <test|grep|log|paper|code-read|user-input> --source "<source pointer>" --confidence <low|medium|high>
@@ -70,19 +78,19 @@ Never hand-edit rendered markdown as the truth source. The `.tree.json` file is 
 
 Use `--probe-type`, `--source`, and `--confidence` when a score is backed by a concrete probe. Omit them only when there is no useful structured metadata.
 
-5. Prune disproven branches instead of deleting them:
+6. Prune disproven branches instead of deleting them:
 
 ```bash
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" prune <task-name>.tree.json --id <node-id> --evidence "<why this branch is ruled out>" --probe-type <test|grep|log|paper|code-read|user-input> --source "<source pointer>" --confidence <low|medium|high>
 ```
 
-6. Backpropagate from evaluated nodes:
+7. Backpropagate from evaluated nodes:
 
 ```bash
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" backprop <task-name>.tree.json --from <node-id>
 ```
 
-7. Render and show the updated state:
+8. Render and show the updated state:
 
 ```bash
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render <task-name>.tree.json --out <task-name>.tree.md
@@ -122,3 +130,7 @@ When reporting progress, include:
 - Pruned branches and why they should not be retried.
 - Updated best path.
 - `doctor` output if the tree was edited by hand or imported from another run.
+
+## Forward Testing
+
+This repository includes evaluation prompts in `evals/evals.json`. Use them when checking whether the skill actually improves agent behavior on debugging, architecture tradeoff, and research synthesis tasks.

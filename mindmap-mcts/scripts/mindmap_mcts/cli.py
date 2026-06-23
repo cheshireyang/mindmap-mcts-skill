@@ -6,7 +6,7 @@ import sys
 
 from .engine import add_node, backpropagate, evaluate_node, frontier_nodes, init_tree, prune_node, select_frontier
 from .model import MindMapError, load_tree, save_tree
-from .render import render_html, render_markdown, render_path, render_summary
+from .render import render_html, render_markdown, render_next, render_path, render_summary
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -76,6 +76,10 @@ def build_parser() -> argparse.ArgumentParser:
     doctor_parser = subcommands.add_parser("doctor", help="validate tree health")
     doctor_parser.add_argument("tree")
     doctor_parser.set_defaults(func=cmd_doctor)
+
+    next_parser = subcommands.add_parser("next", help="recommend the next tree action")
+    next_parser.add_argument("tree")
+    next_parser.set_defaults(func=cmd_next)
 
     return parser
 
@@ -183,6 +187,12 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     print(f"title={tree.title}")
     print(f"nodes={len(tree.nodes)}")
     print(f"frontiers={', '.join(node.id for node in frontiers) if frontiers else '(none)'}")
+    return 0
+
+
+def cmd_next(args: argparse.Namespace) -> int:
+    tree = load_tree(args.tree)
+    print(render_next(tree), end="")
     return 0
 
 

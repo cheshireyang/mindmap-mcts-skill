@@ -1,0 +1,56 @@
+{
+  "skill_name": "mindmap-mcts",
+  "evals": [
+    {
+      "id": "debug-login-timeout",
+      "prompt": "Use $mindmap-mcts to investigate an intermittent login timeout. The app has a web frontend, API service, Postgres database, and Redis cache. Produce the reasoning tree artifacts and a concise final diagnosis plan.",
+      "expected_output": "Creates a tree with mutually exclusive debugging hypotheses, records evidence for at least two probes, prunes at least one disproven branch, and reports a best path with concrete next steps.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Output includes a tree file or rendered tree view with at least three hypothesis branches."
+        },
+        {
+          "text": "Each scored branch includes evidence from a concrete probe such as a log, test, grep, config, or code-read."
+        },
+        {
+          "text": "The final answer names the current best path and explains why weaker branches were down-ranked or pruned."
+        }
+      ]
+    },
+    {
+      "id": "choose-storage-architecture",
+      "prompt": "Use $mindmap-mcts to compare storage architecture options for a collaborative note app: Postgres-only, Postgres plus Redis, event sourcing, or document database. Produce a recommendation with tradeoffs and evidence.",
+      "expected_output": "Builds a visible option tree, evaluates each option against product constraints, records evidence or assumptions, and converges on a recommendation or asks for a decision at a close fork.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Output includes a tree or path summary with multiple architecture options as sibling branches."
+        },
+        {
+          "text": "Evidence is recorded for the option scores, including assumptions, constraints, or source-backed technical facts."
+        },
+        {
+          "text": "The final recommendation cites the best path and identifies at least one close alternative or pruned branch."
+        }
+      ]
+    },
+    {
+      "id": "research-transformer-defects",
+      "prompt": "Use $mindmap-mcts to analyze current defects of Transformer architectures. Search current primary sources where useful, build a reasoning tree, and return a ranked synthesis with citations.",
+      "expected_output": "Creates a research tree that separates efficiency, long-context, generalization, and reliability concerns, records source-backed evidence, and returns a ranked synthesis with links.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Output includes a tree or rendered path that separates distinct defect categories instead of a flat list."
+        },
+        {
+          "text": "Evidence for major claims includes source-backed citations or primary references."
+        },
+        {
+          "text": "The final answer ranks the best-supported defects and distinguishes evidence from inference."
+        }
+      ]
+    }
+  ]
+}

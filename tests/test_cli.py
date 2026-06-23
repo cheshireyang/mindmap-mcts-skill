@@ -141,3 +141,36 @@ def test_cli_render_html_writes_static_visualization(tmp_path):
     assert "MindMap-MCTS: Root" in html
     assert "data-node-id=\"n2\"" in html
     assert "verified" in html
+
+
+def test_cli_next_recommends_frontier_action_and_best_path(tmp_path):
+    tree_path = tmp_path / "task.tree.json"
+    assert run_cli("init", "--title", "Root", "--out", str(tree_path)).returncode == 0
+    assert run_cli("add", str(tree_path), "--parent", "n1", "--type", "hypothesis", "--content", "A").returncode == 0
+    assert run_cli(
+        "eval",
+        str(tree_path),
+        "--id",
+        "n2",
+        "--value",
+        "0.9",
+        "--evidence",
+        "focused test passed",
+        "--probe-type",
+        "test",
+        "--source",
+        "tests/test_login.py::test_timeout",
+        "--confidence",
+        "high",
+    ).returncode == 0
+    assert run_cli("backprop", str(tree_path), "--from", "n2").returncode == 0
+    assert run_cli("add", str(tree_path), "--parent", "n1", "--type", "hypothesis", "--content", "B").returncode == 0
+
+    result = run_cli("next", str(tree_path))
+
+    assert result.returncode == 0, result.stderr
+    assert "Selected frontier: n3" in result.stdout
+    assert "Recommended action: expand n3 with 2-3 concrete, verifiable child nodes" in result.stdout
+    assert "Current best path: n1 -> n2" in result.stdout
+    assert "Best path evidence:" in result.stdout
+    assert "focused test passed" in result.stdout

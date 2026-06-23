@@ -97,13 +97,14 @@ mindmap-mcts/scripts/mindmap render task.tree.json --out task.tree.md
 mindmap-mcts/scripts/mindmap render-html task.tree.json --out task.tree.html
 mindmap-mcts/scripts/mindmap show task.tree.json
 mindmap-mcts/scripts/mindmap path task.tree.json
+mindmap-mcts/scripts/mindmap next task.tree.json
 mindmap-mcts/scripts/mindmap doctor task.tree.json
 ```
 
 Available commands:
 
 ```text
-init, add, eval, prune, select, backprop, render, render-html, show, path, doctor
+init, add, eval, prune, select, backprop, render, render-html, show, path, next, doctor
 ```
 
 Structured evidence fields are optional. Use them when a score is backed by a concrete probe:
@@ -148,6 +149,8 @@ Validate the skill folder with Codex's skill validator:
 ```bash
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py mindmap-mcts
 ```
+
+Skill evaluation prompts live in [evals/evals.json](evals/evals.json). They cover debugging, architecture tradeoffs, and research synthesis, and are intended to compare agent behavior with and without `$mindmap-mcts`.
 
 ## License
 
