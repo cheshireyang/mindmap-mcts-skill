@@ -52,6 +52,17 @@ def test_readme_documents_install_script_and_wrapper():
     assert "mindmap-mcts/scripts/mindmap --help" in readme
 
 
+def test_readme_uses_generated_png_assets_and_preserves_legacy_svgs():
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+
+    assert "assets/alpha-style-architecture.png" in readme
+    assert "assets/reasoning-tree-loop.png" in readme
+    assert (REPO_ROOT / "assets" / "alpha-style-architecture.png").exists()
+    assert (REPO_ROOT / "assets" / "reasoning-tree-loop.png").exists()
+    assert (REPO_ROOT / "assets" / "legacy" / "mindmap-mcts-overview.svg").exists()
+    assert (REPO_ROOT / "assets" / "legacy" / "mcts-loop.svg").exists()
+
+
 def test_skill_uses_wrapper_script_instead_of_long_pythonpath_commands():
     skill = (REPO_ROOT / "mindmap-mcts" / "SKILL.md").read_text(encoding="utf-8")
 

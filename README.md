@@ -2,9 +2,25 @@
 
 Visible reasoning trees for complex Codex tasks.
 
-![MindMap-MCTS architecture](assets/mindmap-mcts-overview.svg)
+![Alpha-style MindMap-MCTS architecture](assets/alpha-style-architecture.png)
 
 MindMap-MCTS is a Codex skill with a bundled Python CLI. It keeps complex debugging, design, and research tasks on an explicit tree instead of a hidden linear thread. Codex expands hypotheses and runs real probes; the CLI owns deterministic tree state, UCB selection, backpropagation, and Markdown rendering.
+
+The design borrows the policy + value + search shape made familiar by Google Alpha-style systems, but applies it to agent work rather than game play or protein modeling. This project is not affiliated with Google, DeepMind, AlphaGo, AlphaZero, AlphaFold, or any official Alpha-series project.
+
+## Alpha-Style Reasoning Architecture
+
+MindMap-MCTS turns Codex problem solving into a compact search architecture:
+
+| Alpha-style component | MindMap-MCTS counterpart |
+| --- | --- |
+| Policy-like proposal | Codex proposes concrete hypotheses, designs, or next actions. |
+| Search tree | `.tree.json` stores branches, states, visits, values, and evidence. |
+| Value signal | Probe-backed evidence scores come from tests, logs, code reads, papers, or user input. |
+| Backpropagation | The CLI updates `V/N` along the selected path after evaluation. |
+| Best action | `next` and `path` expose the strongest branch for the next Codex step. |
+
+The result is an Alpha-inspired skill implementation: the language model supplies candidate moves and real-world probes; the deterministic CLI preserves the tree, scores branches, and renders an auditable reasoning map.
 
 ## What It Does
 
@@ -15,7 +31,7 @@ MindMap-MCTS is a Codex skill with a bundled Python CLI. It keeps complex debugg
 - Preserves pruned branches so dead ends are not retried.
 - Helps agents stop when a high-evidence path converges or when a user decision is needed.
 
-![MCTS loop](assets/mcts-loop.svg)
+![Evidence-guided reasoning loop](assets/reasoning-tree-loop.png)
 
 ## Repository Layout
 
