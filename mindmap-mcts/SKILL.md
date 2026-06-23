@@ -12,17 +12,16 @@ Use this skill to keep complex work on a visible, evidence-backed reasoning tree
 Use the bundled CLI through this command prefix:
 
 ```bash
-MINDMAP_MCTS_PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts"
-PYTHONPATH="$MINDMAP_MCTS_PYTHONPATH" python3 -m mindmap_mcts.cli --help
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" --help
 ```
 
 For repeated commands in one shell session, define:
 
 ```bash
-alias mindmap='PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts" python3 -m mindmap_mcts.cli'
+alias mindmap='"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap"'
 ```
 
-If aliases are not preserved by the current shell call, use the explicit `PYTHONPATH=... python3 -m mindmap_mcts.cli` form.
+If aliases are not preserved by the current shell call, use the explicit `"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap"` form.
 
 Never hand-edit rendered markdown as the truth source. The `.tree.json` file is the truth source; `.tree.md` is only a view.
 
@@ -32,19 +31,19 @@ Never hand-edit rendered markdown as the truth source. The `.tree.json` file is 
 2. If no tree exists, create one:
 
 ```bash
-PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts" python3 -m mindmap_mcts.cli init --title "<task title>" --out <task-name>.tree.json
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" init --title "<task title>" --out <task-name>.tree.json
 ```
 
 3. If a tree exists, inspect it:
 
 ```bash
-PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts" python3 -m mindmap_mcts.cli show <task-name>.tree.json
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" show <task-name>.tree.json
 ```
 
 4. Render the readable view:
 
 ```bash
-PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts" python3 -m mindmap_mcts.cli render <task-name>.tree.json --out <task-name>.tree.md
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render <task-name>.tree.json --out <task-name>.tree.md
 ```
 
 ## Per-Round Loop
@@ -52,13 +51,13 @@ PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts" python3 -m 
 1. Select the next frontier:
 
 ```bash
-PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts" python3 -m mindmap_mcts.cli select <task-name>.tree.json
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" select <task-name>.tree.json
 ```
 
 2. Expand the selected node with 2 or 3 child nodes. Children must be mutually exclusive, concrete, and verifiable.
 
 ```bash
-PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts" python3 -m mindmap_mcts.cli add <task-name>.tree.json --parent <node-id> --type hypothesis --content "<specific hypothesis>"
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" add <task-name>.tree.json --parent <node-id> --type hypothesis --content "<specific hypothesis>"
 ```
 
 3. Evaluate each new child using the cheapest real probe available: read code, grep a symbol, run a focused test, inspect a log, or check a config.
@@ -66,26 +65,26 @@ PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts" python3 -m 
 4. Record value and evidence:
 
 ```bash
-PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts" python3 -m mindmap_mcts.cli eval <task-name>.tree.json --id <node-id> --value <0-to-1> --evidence "<short evidence>"
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" eval <task-name>.tree.json --id <node-id> --value <0-to-1> --evidence "<short evidence>"
 ```
 
 5. Prune disproven branches instead of deleting them:
 
 ```bash
-PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts" python3 -m mindmap_mcts.cli prune <task-name>.tree.json --id <node-id> --evidence "<why this branch is ruled out>"
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" prune <task-name>.tree.json --id <node-id> --evidence "<why this branch is ruled out>"
 ```
 
 6. Backpropagate from evaluated nodes:
 
 ```bash
-PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts" python3 -m mindmap_mcts.cli backprop <task-name>.tree.json --from <node-id>
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" backprop <task-name>.tree.json --from <node-id>
 ```
 
 7. Render and show the updated state:
 
 ```bash
-PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts" python3 -m mindmap_mcts.cli render <task-name>.tree.json --out <task-name>.tree.md
-PYTHONPATH="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts" python3 -m mindmap_mcts.cli show <task-name>.tree.json
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render <task-name>.tree.json --out <task-name>.tree.md
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" show <task-name>.tree.json
 ```
 
 ## Evaluation Scale

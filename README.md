@@ -33,16 +33,22 @@ mindmap-mcts-skill/
 
 ## Install
 
-Clone this repository and copy the skill folder into your Codex skills directory:
+Clone this repository and run the installer:
 
 ```bash
 git clone git@github.com:cheshireyang/mindmap-mcts-skill.git
 cd mindmap-mcts-skill
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-cp -R mindmap-mcts "${CODEX_HOME:-$HOME/.codex}/skills/"
+./install.sh
 ```
 
 Restart Codex so the new skill metadata is loaded.
+
+Manual install is also just a directory copy:
+
+```bash
+mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
+cp -R mindmap-mcts "${CODEX_HOME:-$HOME/.codex}/skills/"
+```
 
 ## Use In Codex
 
@@ -63,29 +69,29 @@ or:
 The skill includes a Python CLI under `mindmap-mcts/scripts`.
 
 ```bash
-PYTHONPATH=mindmap-mcts/scripts python3 -m mindmap_mcts.cli --help
+mindmap-mcts/scripts/mindmap --help
 ```
 
 Create and inspect a tree:
 
 ```bash
-PYTHONPATH=mindmap-mcts/scripts python3 -m mindmap_mcts.cli init \
+mindmap-mcts/scripts/mindmap init \
   --title "Fix intermittent login timeout" \
   --out task.tree.json
 
-PYTHONPATH=mindmap-mcts/scripts python3 -m mindmap_mcts.cli add task.tree.json \
+mindmap-mcts/scripts/mindmap add task.tree.json \
   --parent n1 \
   --type hypothesis \
   --content "DB connection pool is exhausted"
 
-PYTHONPATH=mindmap-mcts/scripts python3 -m mindmap_mcts.cli eval task.tree.json \
+mindmap-mcts/scripts/mindmap eval task.tree.json \
   --id n2 \
   --value 0.9 \
   --evidence "Logs contain pool timeout during failed login"
 
-PYTHONPATH=mindmap-mcts/scripts python3 -m mindmap_mcts.cli backprop task.tree.json --from n2
-PYTHONPATH=mindmap-mcts/scripts python3 -m mindmap_mcts.cli render task.tree.json --out task.tree.md
-PYTHONPATH=mindmap-mcts/scripts python3 -m mindmap_mcts.cli show task.tree.json
+mindmap-mcts/scripts/mindmap backprop task.tree.json --from n2
+mindmap-mcts/scripts/mindmap render task.tree.json --out task.tree.md
+mindmap-mcts/scripts/mindmap show task.tree.json
 ```
 
 Available commands:
