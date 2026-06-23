@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "title": "Fix intermittent login timeout",
+  "root_id": "n1",
+  "params": {
+    "exploration_c": 0.7,
+    "max_depth": 6,
+    "max_iterations": 8,
+    "branch_width": 3
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "parent": null,
+      "content": "Fix intermittent login timeout",
+      "type": "goal",
+      "state": "exploring",
+      "V": 0.9,
+      "N": 1,
+      "evidence": "Initial goal",
+      "created_at": "2026-06-23T12:12:14+00:00",
+      "updated_at": "2026-06-23T12:12:26+00:00"
+    },
+    {
+      "id": "n2",
+      "parent": "n1",
+      "content": "DB connection pool is exhausted",
+      "type": "hypothesis",
+      "state": "verified",
+      "V": 0.9,
+      "N": 1,
+      "evidence": "Logs contain pool timeout during failed login",
+      "created_at": "2026-06-23T12:12:18+00:00",
+      "updated_at": "2026-06-23T12:12:26+00:00"
+    },
+    {
+      "id": "n3",
+      "parent": "n1",
+      "content": "Frontend retry storm overloads login",
+      "type": "hypothesis",
+      "state": "pruned",
+      "V": 0.0,
+      "N": 0,
+      "evidence": "grep found no retry loop in login client",
+      "created_at": "2026-06-23T12:12:33+00:00",
+      "updated_at": "2026-06-23T12:12:37+00:00"
+    }
+  ]
+}

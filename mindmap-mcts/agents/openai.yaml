@@ -1,0 +1,4 @@
+interface:
+  display_name: "MindMap MCTS"
+  short_description: "Visible reasoning tree with MCTS"
+  default_prompt: "Use $mindmap-mcts to explore this complex debugging or design task with a visible reasoning tree."
