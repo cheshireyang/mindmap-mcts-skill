@@ -87,17 +87,31 @@ mindmap-mcts/scripts/mindmap add task.tree.json \
 mindmap-mcts/scripts/mindmap eval task.tree.json \
   --id n2 \
   --value 0.9 \
-  --evidence "Logs contain pool timeout during failed login"
+  --evidence "Logs contain pool timeout during failed login" \
+  --probe-type log \
+  --source logs/auth.log \
+  --confidence high
 
 mindmap-mcts/scripts/mindmap backprop task.tree.json --from n2
 mindmap-mcts/scripts/mindmap render task.tree.json --out task.tree.md
+mindmap-mcts/scripts/mindmap render-html task.tree.json --out task.tree.html
 mindmap-mcts/scripts/mindmap show task.tree.json
+mindmap-mcts/scripts/mindmap path task.tree.json
+mindmap-mcts/scripts/mindmap doctor task.tree.json
 ```
 
 Available commands:
 
 ```text
-init, add, eval, prune, select, backprop, render, show
+init, add, eval, prune, select, backprop, render, render-html, show, path, doctor
+```
+
+Structured evidence fields are optional. Use them when a score is backed by a concrete probe:
+
+```bash
+--probe-type test|grep|log|paper|code-read|user-input
+--source path/to/file.py:42
+--confidence low|medium|high
 ```
 
 ## Example

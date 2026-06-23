@@ -102,3 +102,25 @@ def test_save_and_load_tree_use_json_file(tmp_path):
 
     assert raw["title"] == "Root goal"
     assert loaded == tree
+
+
+def test_node_supports_structured_evidence_metadata():
+    node = Node(
+        id="n1",
+        parent=None,
+        content="root",
+        type="goal",
+        evidence="focused test passed",
+        probe_type="test",
+        source="tests/test_login.py::test_timeout",
+        confidence="high",
+    )
+    tree = Tree(title="Root", root_id="n1", params=Params(), nodes=[node])
+
+    payload = tree_to_dict(tree)
+    restored = tree_from_dict(payload)
+
+    assert payload["nodes"][0]["probe_type"] == "test"
+    assert payload["nodes"][0]["source"] == "tests/test_login.py::test_timeout"
+    assert payload["nodes"][0]["confidence"] == "high"
+    assert restored.nodes[0].probe_type == "test"

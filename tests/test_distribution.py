@@ -27,7 +27,8 @@ def test_wrapper_script_runs_cli_help():
 
     assert result.returncode == 0, result.stderr
     assert "MindMap-MCTS tree engine" in result.stdout
-    assert "{init,add,eval,prune,select,backprop,render,show}" in result.stdout
+    for command in ["init", "add", "eval", "prune", "select", "backprop", "render-html", "path", "doctor"]:
+        assert command in result.stdout
 
 
 def test_install_script_copies_skill_and_smoke_tests_cli(tmp_path):

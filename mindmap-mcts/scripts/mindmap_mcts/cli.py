@@ -4,9 +4,9 @@ import argparse
 from pathlib import Path
 import sys
 
-from .engine import add_node, backpropagate, evaluate_node, init_tree, prune_node, select_frontier
+from .engine import add_node, backpropagate, evaluate_node, frontier_nodes, init_tree, prune_node, select_frontier
 from .model import MindMapError, load_tree, save_tree
-from .render import render_markdown, render_summary
+from .render import render_html, render_markdown, render_path, render_summary
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -31,6 +31,9 @@ def build_parser() -> argparse.ArgumentParser:
     eval_parser.add_argument("--id", required=True)
     eval_parser.add_argument("--value", required=True, type=float)
     eval_parser.add_argument("--evidence", required=True)
+    eval_parser.add_argument("--probe-type", default="")
+    eval_parser.add_argument("--source", default="")
+    eval_parser.add_argument("--confidence", default="")
     eval_parser.add_argument("--state", choices=["frontier", "exploring", "verified", "pruned", "selected"])
     eval_parser.set_defaults(func=cmd_eval)
 
@@ -38,6 +41,9 @@ def build_parser() -> argparse.ArgumentParser:
     prune_parser.add_argument("tree")
     prune_parser.add_argument("--id", required=True)
     prune_parser.add_argument("--evidence", required=True)
+    prune_parser.add_argument("--probe-type", default="")
+    prune_parser.add_argument("--source", default="")
+    prune_parser.add_argument("--confidence", default="")
     prune_parser.set_defaults(func=cmd_prune)
 
     select_parser = subcommands.add_parser("select", help="select the next frontier")
@@ -54,9 +60,22 @@ def build_parser() -> argparse.ArgumentParser:
     render_parser.add_argument("--out", required=True)
     render_parser.set_defaults(func=cmd_render)
 
+    render_html_parser = subcommands.add_parser("render-html", help="render static tree HTML")
+    render_html_parser.add_argument("tree")
+    render_html_parser.add_argument("--out", required=True)
+    render_html_parser.set_defaults(func=cmd_render_html)
+
     show_parser = subcommands.add_parser("show", help="show tree summary")
     show_parser.add_argument("tree")
     show_parser.set_defaults(func=cmd_show)
+
+    path_parser = subcommands.add_parser("path", help="show best path and evidence")
+    path_parser.add_argument("tree")
+    path_parser.set_defaults(func=cmd_path)
+
+    doctor_parser = subcommands.add_parser("doctor", help="validate tree health")
+    doctor_parser.add_argument("tree")
+    doctor_parser.set_defaults(func=cmd_doctor)
 
     return parser
 
@@ -80,7 +99,16 @@ def cmd_add(args: argparse.Namespace) -> int:
 def cmd_eval(args: argparse.Namespace) -> int:
     tree_path = Path(args.tree)
     tree = load_tree(tree_path)
-    tree = evaluate_node(tree, args.id, args.value, args.evidence, state=args.state)
+    tree = evaluate_node(
+        tree,
+        args.id,
+        args.value,
+        args.evidence,
+        state=args.state,
+        probe_type=args.probe_type,
+        source=args.source,
+        confidence=args.confidence,
+    )
     save_tree(tree_path, tree)
     print(f"Evaluated {args.id}")
     return 0
@@ -89,7 +117,14 @@ def cmd_eval(args: argparse.Namespace) -> int:
 def cmd_prune(args: argparse.Namespace) -> int:
     tree_path = Path(args.tree)
     tree = load_tree(tree_path)
-    tree = prune_node(tree, args.id, args.evidence)
+    tree = prune_node(
+        tree,
+        args.id,
+        args.evidence,
+        probe_type=args.probe_type,
+        source=args.source,
+        confidence=args.confidence,
+    )
     save_tree(tree_path, tree)
     print(f"Pruned {args.id}")
     return 0
@@ -120,9 +155,34 @@ def cmd_render(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_render_html(args: argparse.Namespace) -> int:
+    tree = load_tree(args.tree)
+    output_path = Path(args.out)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(render_html(tree), encoding="utf-8")
+    print(f"Rendered {args.out}")
+    return 0
+
+
 def cmd_show(args: argparse.Namespace) -> int:
     tree = load_tree(args.tree)
     print(render_summary(tree), end="")
+    return 0
+
+
+def cmd_path(args: argparse.Namespace) -> int:
+    tree = load_tree(args.tree)
+    print(render_path(tree), end="")
+    return 0
+
+
+def cmd_doctor(args: argparse.Namespace) -> int:
+    tree = load_tree(args.tree)
+    frontiers = frontier_nodes(tree)
+    print("Tree OK")
+    print(f"title={tree.title}")
+    print(f"nodes={len(tree.nodes)}")
+    print(f"frontiers={', '.join(node.id for node in frontiers) if frontiers else '(none)'}")
     return 0
 
 

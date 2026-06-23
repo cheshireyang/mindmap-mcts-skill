@@ -84,6 +84,9 @@ def evaluate_node(
     evidence: str,
     *,
     state: str | None = None,
+    probe_type: str = "",
+    source: str = "",
+    confidence: str = "",
 ) -> Tree:
     if not 0 <= value <= 1:
         raise MindMapError("value must be between 0 and 1")
@@ -93,6 +96,9 @@ def evaluate_node(
         node,
         V=float(value),
         evidence=evidence.strip(),
+        probe_type=probe_type.strip(),
+        source=source.strip(),
+        confidence=confidence.strip(),
         state=chosen_state,
         updated_at=now_iso(),
     )
@@ -101,12 +107,23 @@ def evaluate_node(
     return updated_tree
 
 
-def prune_node(tree: Tree, node_id: str, evidence: str) -> Tree:
+def prune_node(
+    tree: Tree,
+    node_id: str,
+    evidence: str,
+    *,
+    probe_type: str = "",
+    source: str = "",
+    confidence: str = "",
+) -> Tree:
     node = node_by_id(tree, node_id)
     updated = replace(
         node,
         V=0.0,
         evidence=evidence.strip(),
+        probe_type=probe_type.strip(),
+        source=source.strip(),
+        confidence=confidence.strip(),
         state="pruned",
         updated_at=now_iso(),
     )

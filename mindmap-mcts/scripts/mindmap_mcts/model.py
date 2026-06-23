@@ -39,6 +39,9 @@ class Node:
     V: float = 0.5
     N: int = 0
     evidence: str = ""
+    probe_type: str = ""
+    source: str = ""
+    confidence: str = ""
     created_at: str = field(default_factory=now_iso)
     updated_at: str = field(default_factory=now_iso)
 

@@ -65,13 +65,15 @@ Never hand-edit rendered markdown as the truth source. The `.tree.json` file is 
 4. Record value and evidence:
 
 ```bash
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" eval <task-name>.tree.json --id <node-id> --value <0-to-1> --evidence "<short evidence>"
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" eval <task-name>.tree.json --id <node-id> --value <0-to-1> --evidence "<short evidence>" --probe-type <test|grep|log|paper|code-read|user-input> --source "<source pointer>" --confidence <low|medium|high>
 ```
+
+Use `--probe-type`, `--source`, and `--confidence` when a score is backed by a concrete probe. Omit them only when there is no useful structured metadata.
 
 5. Prune disproven branches instead of deleting them:
 
 ```bash
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" prune <task-name>.tree.json --id <node-id> --evidence "<why this branch is ruled out>"
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" prune <task-name>.tree.json --id <node-id> --evidence "<why this branch is ruled out>" --probe-type <test|grep|log|paper|code-read|user-input> --source "<source pointer>" --confidence <low|medium|high>
 ```
 
 6. Backpropagate from evaluated nodes:
@@ -84,7 +86,10 @@ Never hand-edit rendered markdown as the truth source. The `.tree.json` file is 
 
 ```bash
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render <task-name>.tree.json --out <task-name>.tree.md
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render-html <task-name>.tree.json --out <task-name>.tree.html
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" show <task-name>.tree.json
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" path <task-name>.tree.json
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" doctor <task-name>.tree.json
 ```
 
 ## Evaluation Scale
@@ -116,3 +121,4 @@ When reporting progress, include:
 - Probe evidence for each evaluated node.
 - Pruned branches and why they should not be retried.
 - Updated best path.
+- `doctor` output if the tree was edited by hand or imported from another run.
