@@ -101,6 +101,9 @@ def test_readme_documents_install_script_and_wrapper():
     assert "UTF-8" in readme
     assert "render-markmap" in readme
     assert "Exploration status" in readme
+    assert "green `✓`" in readme
+    assert "yellow `◐`" in readme
+    assert "`**n11 事实性与幻觉** (V=0.90 N=1 verified)`" in readme
 
 
 def test_readme_uses_generated_png_assets_and_preserves_legacy_svgs():
@@ -148,6 +151,9 @@ def test_skill_uses_wrapper_script_instead_of_long_pythonpath_commands():
     assert "UTF-8" in skill
     assert "render-markmap" in skill
     assert "Exploration status" in skill
+    assert "green `✓`" in skill
+    assert "yellow `◐`" in skill
+    assert "`**n11 事实性与幻觉** (V=0.90 N=1 verified)`" in skill
 
 
 def test_github_actions_runs_tests():

@@ -79,7 +79,7 @@ The root node created by `init` is `n1`; use `--parent n1` for the first child. 
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render-markmap <task-name>.tree.json --out <task-name>.markmap.html
 ```
 
-Use `render-markmap` when the user wants a browser-based visual tree. It produces interactive HTML through Markmap's browser autoloader. The map starts with an `Exploration status` branch that shows best path, selected frontier, state counts, open frontier nodes, verified nodes, and pruned nodes. In the reasoning tree, read `[BEST]`, `[FRONTIER]`, `[VERIFIED]`, `[PRUNED]`, and `[SELECTED]` tags as the branch exploration status. Use `render-html` only when a static offline fallback is preferable.
+Use `render-markmap` when the user wants a browser-based visual tree. It produces interactive HTML through Markmap's browser autoloader. The map starts with an `Exploration status` branch that shows best path, selected frontier, state counts, open frontier nodes, verified nodes, and pruned nodes. In the reasoning tree, completed exploration uses a green `✓`, partial exploration uses a yellow `◐`, and unopened frontier nodes use a gray `○`; no red cross is used. Node titles are bold black, and status stays immediately after the title, for example `**n11 事实性与幻觉** (V=0.90 N=1 verified)`. Use `render-html` only when a static offline fallback is preferable.
 
 ## Per-Round Loop
 

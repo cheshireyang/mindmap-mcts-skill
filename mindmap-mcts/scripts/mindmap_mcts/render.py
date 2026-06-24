@@ -177,6 +177,26 @@ def render_markmap(tree: Tree) -> str:
       width: 100%;
       height: 100%;
     }}
+    .markmap strong {{
+      color: #030712;
+      fill: #030712;
+      font-weight: 800;
+    }}
+    .marker {{
+      font-weight: 800;
+    }}
+    .marker-complete {{
+      color: #16a34a;
+      fill: #16a34a;
+    }}
+    .marker-partial {{
+      color: #ca8a04;
+      fill: #ca8a04;
+    }}
+    .marker-open {{
+      color: #64748b;
+      fill: #64748b;
+    }}
   </style>
 </head>
 <body>
@@ -204,12 +224,11 @@ def _render_node(tree: Tree, node: Node, depth: int) -> list[str]:
 def _render_markmap_markdown(tree: Tree) -> str:
     root = next(node for node in tree.nodes if node.id == tree.root_id)
     path = best_path(tree)
-    best_ids = {node.id for node in path}
     selected_frontier_id = _selected_open_frontier_id(tree)
     lines = [f"# {_one_line(tree.title)}", ""]
     lines.extend(_render_markmap_status(tree, path, selected_frontier_id))
     lines.append("- Reasoning tree")
-    lines.extend(_render_markmap_node(tree, root, depth=1, best_ids=best_ids, selected_frontier_id=selected_frontier_id))
+    lines.extend(_render_markmap_node(tree, root, depth=1, selected_frontier_id=selected_frontier_id))
     return "\n".join(lines)
 
 
@@ -230,11 +249,12 @@ def _render_markmap_node(
     node: Node,
     depth: int,
     *,
-    best_ids: set[str],
     selected_frontier_id: str,
 ) -> list[str]:
     indent = "  " * depth
-    line = f"{indent}- {node.id} {_markmap_tags(node, best_ids, selected_frontier_id)} {_one_line(node.content)} | V={node.V:.2f} | N={node.N}"
+    marker = _markmap_marker(node)
+    selected = " selected" if node.id == selected_frontier_id else ""
+    line = f"{indent}- {marker} **{node.id} {_one_line(node.content)}** (V={node.V:.2f} N={node.N} {node.state}){selected}"
     lines = [line]
     if node.evidence:
         lines.append(f"{indent}  - evidence: {_one_line(node.evidence)}")
@@ -247,11 +267,18 @@ def _render_markmap_node(
                 tree,
                 child,
                 depth + 1,
-                best_ids=best_ids,
                 selected_frontier_id=selected_frontier_id,
             )
         )
     return lines
+
+
+def _markmap_marker(node: Node) -> str:
+    if node.state in {"verified", "pruned"}:
+        return '<span class="marker marker-complete">✓</span>'
+    if node.state in {"exploring", "selected"} or node.N > 0:
+        return '<span class="marker marker-partial">◐</span>'
+    return '<span class="marker marker-open">○</span>'
 
 
 def _selected_open_frontier_id(tree: Tree) -> str:
@@ -277,16 +304,6 @@ def _nodes_by_state(tree: Tree, state: str) -> list[Node]:
 
 def _format_node_ids(nodes: list[Node]) -> str:
     return " -> ".join(node.id for node in nodes) if nodes else "(none)"
-
-
-def _markmap_tags(node: Node, best_ids: set[str], selected_frontier_id: str) -> str:
-    tags = []
-    if node.id in best_ids:
-        tags.append("[BEST]")
-    tags.append(f"[{node.state.upper()}]")
-    if node.id == selected_frontier_id and node.state != "selected":
-        tags.append("[SELECTED]")
-    return " ".join(tags)
 
 
 def _one_line(value: str) -> str:

@@ -90,11 +90,19 @@ def test_render_markmap_outputs_interactive_mindmap_html():
     assert html.startswith("<!doctype html>")
     assert "markmap-autoloader" in html
     assert '<div class="markmap">' in html
+    assert ".markmap strong" in html
+    assert "font-weight: 800" in html
+    assert "#030712" in html
+    assert ".marker-complete" in html
+    assert "#16a34a" in html
+    assert ".marker-partial" in html
+    assert "#ca8a04" in html
+    assert "✗" not in html
     assert "# Root" in html
     assert "- Exploration status" in html
     assert "- Reasoning tree" in html
-    assert "  - n1 [BEST] [EXPLORING] Root | V=0.90 | N=1" in html
-    assert "    - n2 [BEST] [VERIFIED] Promising branch | V=0.90 | N=1" in html
+    assert '  - <span class="marker marker-partial">◐</span> **n1 Root** (V=0.90 N=1 exploring)' in html
+    assert '    - <span class="marker marker-complete">✓</span> **n2 Promising branch** (V=0.90 N=1 verified)' in html
     assert "evidence: focused test passed" in html
     assert "probe_type=test, source=tests/test_login.py::test_timeout, confidence=high" in html
 
@@ -116,6 +124,6 @@ def test_render_markmap_summarizes_branch_exploration_status():
     assert "  - open frontier: n4" in html
     assert "  - verified: n2" in html
     assert "  - pruned: n3" in html
-    assert "    - n2 [BEST] [VERIFIED] Verified branch | V=0.90 | N=1" in html
-    assert "    - n3 [PRUNED] Pruned branch | V=0.00 | N=0" in html
-    assert f"    - {frontier.id} [FRONTIER] [SELECTED] Unexplored branch | V=0.50 | N=0" in html
+    assert '    - <span class="marker marker-complete">✓</span> **n2 Verified branch** (V=0.90 N=1 verified)' in html
+    assert '    - <span class="marker marker-complete">✓</span> **n3 Pruned branch** (V=0.00 N=0 pruned)' in html
+    assert f'    - <span class="marker marker-open">○</span> **{frontier.id} Unexplored branch** (V=0.50 N=0 frontier) selected' in html

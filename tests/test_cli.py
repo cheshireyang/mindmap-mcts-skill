@@ -193,7 +193,7 @@ def test_cli_render_markmap_writes_interactive_mindmap(tmp_path):
     assert "- Exploration status" in html
     assert "  - verified: n2" in html
     assert "- Reasoning tree" in html
-    assert "    - n2 [BEST] [VERIFIED] A | V=0.90 | N=0" in html
+    assert '    - <span class="marker marker-complete">✓</span> **n2 A** (V=0.90 N=0 verified)' in html
 
 
 def test_cli_next_recommends_frontier_action_and_best_path(tmp_path):
