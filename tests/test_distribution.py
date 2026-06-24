@@ -100,6 +100,7 @@ def test_readme_documents_install_script_and_wrapper():
     assert "--parent n1" in readme
     assert "UTF-8" in readme
     assert "render-markmap" in readme
+    assert "Exploration status" in readme
 
 
 def test_readme_uses_generated_png_assets_and_preserves_legacy_svgs():
@@ -146,6 +147,7 @@ def test_skill_uses_wrapper_script_instead_of_long_pythonpath_commands():
     assert "n1" in skill
     assert "UTF-8" in skill
     assert "render-markmap" in skill
+    assert "Exploration status" in skill
 
 
 def test_github_actions_runs_tests():

@@ -162,7 +162,7 @@ mindmap-mcts/scripts/mindmap next task.tree.json
 mindmap-mcts/scripts/mindmap doctor task.tree.json
 ```
 
-Use `render-markmap` for an interactive browser mind map. It writes a self-contained HTML shell that loads Markmap in the browser through the official CDN autoloader, so no local Node/npm setup is required. Use `render-html` when you want the simpler static fallback.
+Use `render-markmap` for an interactive browser mind map. It writes a self-contained HTML shell that loads Markmap in the browser through the official CDN autoloader, so no local Node/npm setup is required. The generated map starts with an `Exploration status` branch showing best path, selected frontier, state counts, open frontier nodes, verified nodes, and pruned nodes. Each tree node is also tagged with labels such as `[BEST]`, `[FRONTIER]`, `[VERIFIED]`, `[PRUNED]`, and `[SELECTED]` so branch exploration is visible at a glance. Use `render-html` when you want the simpler static fallback.
 
 Available commands:
 

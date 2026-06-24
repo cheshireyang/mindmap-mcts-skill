@@ -3,7 +3,7 @@ from __future__ import annotations
 from html import escape
 
 from .engine import best_path, frontier_nodes, select_frontier
-from .model import Node, Tree, children_of
+from .model import MindMapError, Node, Tree, children_of
 
 
 def render_markdown(tree: Tree) -> str:
@@ -203,14 +203,38 @@ def _render_node(tree: Tree, node: Node, depth: int) -> list[str]:
 
 def _render_markmap_markdown(tree: Tree) -> str:
     root = next(node for node in tree.nodes if node.id == tree.root_id)
+    path = best_path(tree)
+    best_ids = {node.id for node in path}
+    selected_frontier_id = _selected_open_frontier_id(tree)
     lines = [f"# {_one_line(tree.title)}", ""]
-    lines.extend(_render_markmap_node(tree, root, depth=0))
+    lines.extend(_render_markmap_status(tree, path, selected_frontier_id))
+    lines.append("- Reasoning tree")
+    lines.extend(_render_markmap_node(tree, root, depth=1, best_ids=best_ids, selected_frontier_id=selected_frontier_id))
     return "\n".join(lines)
 
 
-def _render_markmap_node(tree: Tree, node: Node, depth: int) -> list[str]:
+def _render_markmap_status(tree: Tree, path: list[Node], selected_frontier_id: str) -> list[str]:
+    return [
+        "- Exploration status",
+        f"  - best path: {_format_node_ids(path)}",
+        f"  - selected frontier: {selected_frontier_id or '(none)'}",
+        f"  - state counts: {_format_state_counts(tree)}",
+        f"  - open frontier: {_format_node_ids(_nodes_by_state(tree, 'frontier'))}",
+        f"  - verified: {_format_node_ids(_nodes_by_state(tree, 'verified'))}",
+        f"  - pruned: {_format_node_ids(_nodes_by_state(tree, 'pruned'))}",
+    ]
+
+
+def _render_markmap_node(
+    tree: Tree,
+    node: Node,
+    depth: int,
+    *,
+    best_ids: set[str],
+    selected_frontier_id: str,
+) -> list[str]:
     indent = "  " * depth
-    line = f"{indent}- {node.id} {_one_line(node.content)} (V={node.V:.2f} N={node.N} {node.state})"
+    line = f"{indent}- {node.id} {_markmap_tags(node, best_ids, selected_frontier_id)} {_one_line(node.content)} | V={node.V:.2f} | N={node.N}"
     lines = [line]
     if node.evidence:
         lines.append(f"{indent}  - evidence: {_one_line(node.evidence)}")
@@ -218,8 +242,51 @@ def _render_markmap_node(tree: Tree, node: Node, depth: int) -> list[str]:
     if metadata:
         lines.append(f"{indent}  - {_one_line(metadata)}")
     for child in children_of(tree, node.id):
-        lines.extend(_render_markmap_node(tree, child, depth + 1))
+        lines.extend(
+            _render_markmap_node(
+                tree,
+                child,
+                depth + 1,
+                best_ids=best_ids,
+                selected_frontier_id=selected_frontier_id,
+            )
+        )
     return lines
+
+
+def _selected_open_frontier_id(tree: Tree) -> str:
+    try:
+        selected = select_frontier(tree)
+    except MindMapError:
+        return ""
+    return selected.id if selected.state == "frontier" else ""
+
+
+def _format_state_counts(tree: Tree) -> str:
+    state_order = ["exploring", "frontier", "verified", "pruned", "selected"]
+    counts = {state: 0 for state in state_order}
+    for node in tree.nodes:
+        counts[node.state] = counts.get(node.state, 0) + 1
+    present = [f"{state}={counts[state]}" for state in state_order if counts.get(state, 0)]
+    return ", ".join(present) if present else "(none)"
+
+
+def _nodes_by_state(tree: Tree, state: str) -> list[Node]:
+    return [node for node in tree.nodes if node.state == state]
+
+
+def _format_node_ids(nodes: list[Node]) -> str:
+    return " -> ".join(node.id for node in nodes) if nodes else "(none)"
+
+
+def _markmap_tags(node: Node, best_ids: set[str], selected_frontier_id: str) -> str:
+    tags = []
+    if node.id in best_ids:
+        tags.append("[BEST]")
+    tags.append(f"[{node.state.upper()}]")
+    if node.id == selected_frontier_id and node.state != "selected":
+        tags.append("[SELECTED]")
+    return " ".join(tags)
 
 
 def _one_line(value: str) -> str:

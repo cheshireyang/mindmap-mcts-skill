@@ -190,7 +190,10 @@ def test_cli_render_markmap_writes_interactive_mindmap(tmp_path):
     assert "markmap-autoloader" in html
     assert '<div class="markmap">' in html
     assert "# Root" in html
-    assert "- n2 A (V=0.90 N=0 verified)" in html
+    assert "- Exploration status" in html
+    assert "  - verified: n2" in html
+    assert "- Reasoning tree" in html
+    assert "    - n2 [BEST] [VERIFIED] A | V=0.90 | N=0" in html
 
 
 def test_cli_next_recommends_frontier_action_and_best_path(tmp_path):
