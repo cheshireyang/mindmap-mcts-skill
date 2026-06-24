@@ -155,6 +155,42 @@ def render_html(tree: Tree) -> str:
 """
 
 
+def render_markmap(tree: Tree) -> str:
+    markdown = _escape_script_template(_render_markmap_markdown(tree))
+    return f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MindMap-MCTS Markmap: {escape(tree.title)}</title>
+  <style>
+    body {{
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }}
+    .markmap {{
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }}
+    .markmap > svg {{
+      width: 100%;
+      height: 100%;
+    }}
+  </style>
+</head>
+<body>
+  <div class="markmap">
+    <script type="text/template">
+{markdown}
+    </script>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-autoloader@0.18"></script>
+</body>
+</html>
+"""
+
+
 def _render_node(tree: Tree, node: Node, depth: int) -> list[str]:
     indent = "  " * depth
     evidence = f" -- {node.evidence}" if node.evidence else ""
@@ -163,6 +199,35 @@ def _render_node(tree: Tree, node: Node, depth: int) -> list[str]:
     for child in children_of(tree, node.id):
         lines.extend(_render_node(tree, child, depth + 1))
     return lines
+
+
+def _render_markmap_markdown(tree: Tree) -> str:
+    root = next(node for node in tree.nodes if node.id == tree.root_id)
+    lines = [f"# {_one_line(tree.title)}", ""]
+    lines.extend(_render_markmap_node(tree, root, depth=0))
+    return "\n".join(lines)
+
+
+def _render_markmap_node(tree: Tree, node: Node, depth: int) -> list[str]:
+    indent = "  " * depth
+    line = f"{indent}- {node.id} {_one_line(node.content)} (V={node.V:.2f} N={node.N} {node.state})"
+    lines = [line]
+    if node.evidence:
+        lines.append(f"{indent}  - evidence: {_one_line(node.evidence)}")
+    metadata = _evidence_metadata(node)
+    if metadata:
+        lines.append(f"{indent}  - {_one_line(metadata)}")
+    for child in children_of(tree, node.id):
+        lines.extend(_render_markmap_node(tree, child, depth + 1))
+    return lines
+
+
+def _one_line(value: str) -> str:
+    return escape(" ".join(value.split()), quote=False)
+
+
+def _escape_script_template(markdown: str) -> str:
+    return markdown.replace("</script", "<\\/script").replace("</SCRIPT", "<\\/SCRIPT")
 
 
 def _evidence_metadata(node: Node) -> str:

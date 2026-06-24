@@ -176,6 +176,23 @@ def test_cli_render_html_writes_static_visualization(tmp_path):
     assert "verified" in html
 
 
+def test_cli_render_markmap_writes_interactive_mindmap(tmp_path):
+    tree_path = tmp_path / "task.tree.json"
+    html_path = tmp_path / "task.markmap.html"
+    assert run_cli("init", "--title", "Root", "--out", str(tree_path)).returncode == 0
+    assert run_cli("add", str(tree_path), "--parent", "n1", "--type", "hypothesis", "--content", "A").returncode == 0
+    assert run_cli("eval", str(tree_path), "--id", "n2", "--value", "0.9", "--evidence", "verified").returncode == 0
+
+    result = run_cli("render-markmap", str(tree_path), "--out", str(html_path))
+
+    assert result.returncode == 0, result.stderr
+    html = html_path.read_text(encoding="utf-8")
+    assert "markmap-autoloader" in html
+    assert '<div class="markmap">' in html
+    assert "# Root" in html
+    assert "- n2 A (V=0.90 N=0 verified)" in html
+
+
 def test_cli_next_recommends_frontier_action_and_best_path(tmp_path):
     tree_path = tmp_path / "task.tree.json"
     assert run_cli("init", "--title", "Root", "--out", str(tree_path)).returncode == 0

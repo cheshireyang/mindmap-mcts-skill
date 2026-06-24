@@ -6,7 +6,7 @@ import sys
 
 from .engine import add_node, backpropagate, evaluate_node, frontier_nodes, init_tree, prune_node, select_frontier
 from .model import MindMapError, load_tree, save_tree
-from .render import render_html, render_markdown, render_next, render_path, render_summary
+from .render import render_html, render_markdown, render_markmap, render_next, render_path, render_summary
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -64,6 +64,11 @@ def build_parser() -> argparse.ArgumentParser:
     render_html_parser.add_argument("tree")
     render_html_parser.add_argument("--out", required=True)
     render_html_parser.set_defaults(func=cmd_render_html)
+
+    render_markmap_parser = subcommands.add_parser("render-markmap", help="render interactive Markmap HTML")
+    render_markmap_parser.add_argument("tree")
+    render_markmap_parser.add_argument("--out", required=True)
+    render_markmap_parser.set_defaults(func=cmd_render_markmap)
 
     show_parser = subcommands.add_parser("show", help="show tree summary")
     show_parser.add_argument("tree")
@@ -164,6 +169,15 @@ def cmd_render_html(args: argparse.Namespace) -> int:
     output_path = Path(args.out)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(render_html(tree), encoding="utf-8")
+    print(f"Rendered {args.out}")
+    return 0
+
+
+def cmd_render_markmap(args: argparse.Namespace) -> int:
+    tree = load_tree(args.tree)
+    output_path = Path(args.out)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(render_markmap(tree), encoding="utf-8")
     print(f"Rendered {args.out}")
     return 0
 

@@ -5,7 +5,7 @@ Use this content in the GitHub repository sidebar to make the project easier to 
 ## Repository Description
 
 ```text
-A Codex/Claude Code skill for evidence-guided agent reasoning: visible search trees, lightweight MCTS/UCB, probe scoring, backpropagation, and Markdown/HTML reports.
+A Codex/Claude Code skill for evidence-guided agent reasoning: visible search trees, lightweight MCTS/UCB, probe scoring, backpropagation, and interactive Markmap HTML mind maps.
 ```
 
 ## Website
@@ -25,6 +25,8 @@ ai-agents
 agentic-ai
 agent-reasoning
 reasoning-tree
+mindmap
+markmap
 tree-search
 mcts
 monte-carlo-tree-search

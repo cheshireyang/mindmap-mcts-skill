@@ -17,7 +17,7 @@ Codex skill, Claude Code skill, AI agents, agentic AI, agent reasoning, reasonin
 ## What It Does
 
 - Creates a JSON reasoning tree as the truth source.
-- Renders readable Markdown and static HTML mindmap views.
+- Renders readable Markdown, static HTML, and interactive Markmap HTML mindmap views.
 - Selects the next branch with lightweight MCTS/UCB.
 - Records `V` value, `N` visits, state, probe metadata, and evidence per node.
 - Preserves pruned branches so dead ends are not retried.
@@ -125,6 +125,12 @@ Windows `cmd.exe` can use:
 mindmap-mcts\scripts\mindmap.cmd --help
 ```
 
+Generate the interactive HTML mind map from PowerShell:
+
+```powershell
+.\mindmap-mcts\scripts\mindmap.ps1 render-markmap task.tree.json --out task.markmap.html
+```
+
 Create and inspect a tree:
 
 ```bash
@@ -149,16 +155,19 @@ mindmap-mcts/scripts/mindmap eval task.tree.json \
 mindmap-mcts/scripts/mindmap backprop task.tree.json --from n2
 mindmap-mcts/scripts/mindmap render task.tree.json --out task.tree.md
 mindmap-mcts/scripts/mindmap render-html task.tree.json --out task.tree.html
+mindmap-mcts/scripts/mindmap render-markmap task.tree.json --out task.markmap.html
 mindmap-mcts/scripts/mindmap show task.tree.json
 mindmap-mcts/scripts/mindmap path task.tree.json
 mindmap-mcts/scripts/mindmap next task.tree.json
 mindmap-mcts/scripts/mindmap doctor task.tree.json
 ```
 
+Use `render-markmap` for an interactive browser mind map. It writes a self-contained HTML shell that loads Markmap in the browser through the official CDN autoloader, so no local Node/npm setup is required. Use `render-html` when you want the simpler static fallback.
+
 Available commands:
 
 ```text
-init, add, eval, prune, select, backprop, render, render-html, show, path, next, doctor
+init, add, eval, prune, select, backprop, render, render-html, render-markmap, show, path, next, doctor
 ```
 
 Structured evidence fields are optional. Use them when a score is backed by a concrete probe:

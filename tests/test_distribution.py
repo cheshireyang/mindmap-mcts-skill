@@ -27,7 +27,19 @@ def test_wrapper_script_runs_cli_help():
 
     assert result.returncode == 0, result.stderr
     assert "MindMap-MCTS tree engine" in result.stdout
-    for command in ["init", "add", "eval", "prune", "select", "backprop", "render-html", "path", "doctor", "next"]:
+    for command in [
+        "init",
+        "add",
+        "eval",
+        "prune",
+        "select",
+        "backprop",
+        "render-html",
+        "render-markmap",
+        "path",
+        "doctor",
+        "next",
+    ]:
         assert command in result.stdout
 
 
@@ -39,6 +51,7 @@ def test_python_launcher_runs_cli_help():
     assert result.returncode == 0, result.stderr
     assert "MindMap-MCTS tree engine" in result.stdout
     assert "render-html" in result.stdout
+    assert "render-markmap" in result.stdout
 
 
 def test_windows_launchers_document_python_module_and_utf8_setup():
@@ -86,6 +99,7 @@ def test_readme_documents_install_script_and_wrapper():
     assert "PowerShell" in readme
     assert "--parent n1" in readme
     assert "UTF-8" in readme
+    assert "render-markmap" in readme
 
 
 def test_readme_uses_generated_png_assets_and_preserves_legacy_svgs():
@@ -131,6 +145,7 @@ def test_skill_uses_wrapper_script_instead_of_long_pythonpath_commands():
     assert "PowerShell" in skill
     assert "n1" in skill
     assert "UTF-8" in skill
+    assert "render-markmap" in skill
 
 
 def test_github_actions_runs_tests():

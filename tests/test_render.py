@@ -1,5 +1,5 @@
 from mindmap_mcts.engine import add_node, backpropagate, best_path, evaluate_node, init_tree, prune_node
-from mindmap_mcts.render import render_html, render_markdown, render_path, render_summary
+from mindmap_mcts.render import render_html, render_markdown, render_markmap, render_path, render_summary
 
 
 def test_render_markdown_preserves_tree_shape_and_evidence():
@@ -69,3 +69,29 @@ def test_render_html_outputs_static_document_with_node_data():
     assert 'data-node-id="n2"' in html
     assert "Promising branch" in html
     assert "verified" in html
+
+
+def test_render_markmap_outputs_interactive_mindmap_html():
+    tree = init_tree("Root")
+    tree, child = add_node(tree, "n1", "Promising branch", "hypothesis")
+    tree = evaluate_node(
+        tree,
+        child.id,
+        0.9,
+        "focused test passed",
+        probe_type="test",
+        source="tests/test_login.py::test_timeout",
+        confidence="high",
+    )
+    tree = backpropagate(tree, child.id)
+
+    html = render_markmap(tree)
+
+    assert html.startswith("<!doctype html>")
+    assert "markmap-autoloader" in html
+    assert '<div class="markmap">' in html
+    assert "# Root" in html
+    assert "- n1 Root (V=0.90 N=1 exploring)" in html
+    assert "  - n2 Promising branch (V=0.90 N=1 verified)" in html
+    assert "evidence: focused test passed" in html
+    assert "probe_type=test, source=tests/test_login.py::test_timeout, confidence=high" in html

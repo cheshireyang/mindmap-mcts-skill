@@ -5,7 +5,7 @@ description: Run a visible reasoning-tree workflow with lightweight MCTS for com
 
 # MindMap-MCTS
 
-Use this skill to keep complex work on a visible, evidence-backed reasoning tree. The bundled CLI owns the JSON truth source, UCB selection, backpropagation, and markdown rendering; the agent owns expansion, real probes, and judgment.
+Use this skill to keep complex work on a visible, evidence-backed reasoning tree. The bundled CLI owns the JSON truth source, UCB selection, backpropagation, markdown rendering, static HTML rendering, and interactive Markmap HTML rendering; the agent owns expansion, real probes, and judgment.
 
 ## Command Prefix
 
@@ -76,7 +76,10 @@ The root node created by `init` is `n1`; use `--parent n1` for the first child. 
 
 ```bash
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render <task-name>.tree.json --out <task-name>.tree.md
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render-markmap <task-name>.tree.json --out <task-name>.markmap.html
 ```
+
+Use `render-markmap` when the user wants a browser-based visual tree. It produces interactive HTML through Markmap's browser autoloader. Use `render-html` only when a static offline fallback is preferable.
 
 ## Per-Round Loop
 
@@ -127,6 +130,7 @@ Use `--probe-type`, `--source`, and `--confidence` when a score is backed by a c
 ```bash
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render <task-name>.tree.json --out <task-name>.tree.md
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render-html <task-name>.tree.json --out <task-name>.tree.html
+"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render-markmap <task-name>.tree.json --out <task-name>.markmap.html
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" show <task-name>.tree.json
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" path <task-name>.tree.json
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" doctor <task-name>.tree.json
