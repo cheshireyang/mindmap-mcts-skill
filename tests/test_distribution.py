@@ -63,6 +63,30 @@ def test_readme_uses_generated_png_assets_and_preserves_legacy_svgs():
     assert (REPO_ROOT / "assets" / "legacy" / "mcts-loop.svg").exists()
 
 
+def test_readme_and_repository_metadata_include_discovery_terms():
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8").lower()
+    metadata = (REPO_ROOT / ".github" / "repository-metadata.md").read_text(encoding="utf-8").lower()
+
+    for term in [
+        "codex skill",
+        "claude code skill",
+        "ai agents",
+        "agent reasoning",
+        "reasoning tree",
+        "tree search",
+        "monte carlo tree search",
+        "mcts",
+        "ucb",
+    ]:
+        assert term in readme
+
+    assert "repository description" in metadata
+    assert "repository topics" in metadata
+    assert "codex-skill" in metadata
+    assert "claude-code" in metadata
+    assert "monte-carlo-tree-search" in metadata
+
+
 def test_skill_uses_wrapper_script_instead_of_long_pythonpath_commands():
     skill = (REPO_ROOT / "mindmap-mcts" / "SKILL.md").read_text(encoding="utf-8")
 

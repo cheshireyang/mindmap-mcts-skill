@@ -1,14 +1,31 @@
-# MindMap-MCTS Skill
+# MindMap-MCTS
 
-Visible reasoning trees for complex Codex tasks.
+Evidence-guided reasoning trees for Codex and Claude Code agents.
 
 ![Alpha-style MindMap-MCTS architecture](assets/alpha-style-architecture.png)
 
-MindMap-MCTS is a Codex skill with a bundled Python CLI. It keeps complex debugging, design, and research tasks on an explicit tree instead of a hidden linear thread. Codex expands hypotheses and runs real probes; the CLI owns deterministic tree state, UCB selection, backpropagation, and Markdown rendering.
+MindMap-MCTS is an installable Codex skill and Claude Code skill pattern for complex debugging, architecture decisions, and research synthesis. It turns agent reasoning into an auditable reasoning tree: propose branches, run real probes, score evidence, backpropagate values, and choose the next step with lightweight Monte Carlo Tree Search (MCTS) and UCB.
 
-The design borrows the policy + value + search shape made familiar by Google Alpha-style systems, but applies it to agent work rather than game play or protein modeling. This project is not affiliated with Google, DeepMind, AlphaGo, AlphaZero, AlphaFold, or any official Alpha-series project.
+In short: this gives AI agents a visible tree search loop instead of a hidden linear trial-and-error thread.
 
-## Alpha-Style Reasoning Architecture
+## Search Keywords
+
+Codex skill, Claude Code skill, AI agents, agentic AI, agent reasoning, reasoning tree, evidence-guided reasoning, tree search, Monte Carlo Tree Search, MCTS, UCB, debugging workflow, planning workflow, architecture tradeoffs, research synthesis.
+
+中文摘要：MindMap-MCTS 给 Codex、Claude Code 和其他智能体安装一个可见的推理树，让复杂问题可以用“分支探索、证据评分、MCTS/UCB 选择、回传更新”的方式推进，而不是线性瞎试。
+
+## What It Does
+
+- Creates a JSON reasoning tree as the truth source.
+- Renders readable Markdown and static HTML mindmap views.
+- Selects the next branch with lightweight MCTS/UCB.
+- Records `V` value, `N` visits, state, probe metadata, and evidence per node.
+- Preserves pruned branches so dead ends are not retried.
+- Helps agents stop when a high-evidence path converges or when a user decision is needed.
+
+![Evidence-guided reasoning loop](assets/reasoning-tree-loop.png)
+
+## Alpha-Style Search Architecture
 
 MindMap-MCTS turns Codex problem solving into a compact search architecture:
 
@@ -22,16 +39,7 @@ MindMap-MCTS turns Codex problem solving into a compact search architecture:
 
 The result is an Alpha-inspired skill implementation: the language model supplies candidate moves and real-world probes; the deterministic CLI preserves the tree, scores branches, and renders an auditable reasoning map.
 
-## What It Does
-
-- Creates a JSON reasoning tree as the truth source.
-- Renders a readable Markdown mindmap view.
-- Selects the next branch with lightweight MCTS/UCB.
-- Records `V` value, `N` visits, state, and evidence per node.
-- Preserves pruned branches so dead ends are not retried.
-- Helps agents stop when a high-evidence path converges or when a user decision is needed.
-
-![Evidence-guided reasoning loop](assets/reasoning-tree-loop.png)
+This project is not affiliated with Google, DeepMind, AlphaGo, AlphaZero, AlphaFold, or any official Alpha-series project.
 
 ## Repository Layout
 
