@@ -117,34 +117,62 @@ def replace_node(tree: Tree, replacement: Node) -> Tree:
 
 
 def validate_tree(tree: Tree) -> None:
+    if not _is_int(tree.version):
+        raise MindMapError("tree version must be an integer")
     if tree.version != 1:
         raise MindMapError(f"unsupported tree version: {tree.version}")
+    if not isinstance(tree.title, str):
+        raise MindMapError("tree title must be a string")
     if not tree.title.strip():
         raise MindMapError("tree title must not be empty")
+    if not isinstance(tree.root_id, str):
+        raise MindMapError("root_id must be a string")
+    if not _is_number(tree.params.exploration_c):
+        raise MindMapError("exploration_c must be numeric")
     if tree.params.exploration_c < 0:
         raise MindMapError("exploration_c must be non-negative")
+    if not _is_int(tree.params.max_depth):
+        raise MindMapError("max_depth must be an integer")
     if tree.params.max_depth < 1:
         raise MindMapError("max_depth must be at least 1")
+    if not _is_int(tree.params.max_iterations):
+        raise MindMapError("max_iterations must be an integer")
     if tree.params.max_iterations < 1:
         raise MindMapError("max_iterations must be at least 1")
+    if not _is_int(tree.params.branch_width):
+        raise MindMapError("branch_width must be an integer")
     if tree.params.branch_width < 1:
         raise MindMapError("branch_width must be at least 1")
 
     ids: set[str] = set()
     for node in tree.nodes:
+        if not isinstance(node.id, str):
+            raise MindMapError("node id must be a string")
         if node.id in ids:
             raise MindMapError(f"duplicate node id: {node.id}")
         ids.add(node.id)
         if not node.id.strip():
             raise MindMapError("node id must not be empty")
+        if node.parent is not None and not isinstance(node.parent, str):
+            raise MindMapError(f"parent must be a string for {node.id}")
+        if not isinstance(node.type, str):
+            raise MindMapError(f"type must be a string for {node.id}")
         if node.type not in NODE_TYPES:
             raise MindMapError(f"invalid node type for {node.id}: {node.type}")
+        if not isinstance(node.state, str):
+            raise MindMapError(f"state must be a string for {node.id}")
         if node.state not in NODE_STATES:
             raise MindMapError(f"invalid node state for {node.id}: {node.state}")
+        if not _is_number(node.V):
+            raise MindMapError(f"V must be numeric for {node.id}")
         if not 0 <= node.V <= 1:
             raise MindMapError(f"V must be between 0 and 1 for {node.id}")
+        if not _is_int(node.N):
+            raise MindMapError(f"N must be an integer for {node.id}")
         if node.N < 0:
             raise MindMapError(f"N must be non-negative for {node.id}")
+        if not isinstance(node.content, str):
+            raise MindMapError(f"content must be a string for {node.id}")
         if not node.content.strip():
             raise MindMapError(f"content must not be empty for {node.id}")
 
@@ -174,6 +202,14 @@ def _validate_acyclic(tree: Tree) -> None:
                 raise MindMapError(f"cycle detected at node {current}")
             seen.add(current)
             current = parent_by_id[current]
+
+
+def _is_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+
+def _is_int(value: Any) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
 
 
 def next_node_id(tree: Tree) -> str:

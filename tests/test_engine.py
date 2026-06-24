@@ -111,6 +111,22 @@ def test_select_frontier_descends_until_leaf_frontier():
     assert selected.id == leaf.id
 
 
+def test_select_frontier_rejects_pruned_root():
+    tree = init_tree("Root")
+    tree = prune_node(tree, "n1", evidence="ruled out")
+
+    with pytest.raises(MindMapError, match="no selectable frontier"):
+        select_frontier(tree)
+
+
+def test_evaluate_node_rejects_pruned_state():
+    tree = init_tree("Root")
+    tree, child = add_node(tree, "n1", "A", "hypothesis")
+
+    with pytest.raises(MindMapError, match="use prune_node"):
+        evaluate_node(tree, child.id, value=0.9, evidence="conflicting", state="pruned")
+
+
 def test_backpropagate_increments_path_and_sets_parent_to_best_child_value():
     tree = init_tree("Root")
     tree, low = add_node(tree, "n1", "Weak", "hypothesis")

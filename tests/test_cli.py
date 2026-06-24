@@ -82,6 +82,39 @@ def test_cli_invalid_value_returns_nonzero(tmp_path):
     assert "value must be between 0 and 1" in result.stderr
 
 
+def test_cli_rejects_eval_pruned_state(tmp_path):
+    tree_path = tmp_path / "task.tree.json"
+    assert run_cli("init", "--title", "Root", "--out", str(tree_path)).returncode == 0
+    assert run_cli("add", str(tree_path), "--parent", "n1", "--type", "hypothesis", "--content", "A").returncode == 0
+
+    result = run_cli(
+        "eval",
+        str(tree_path),
+        "--id",
+        "n2",
+        "--value",
+        "0.9",
+        "--state",
+        "pruned",
+        "--evidence",
+        "conflicting",
+    )
+
+    assert result.returncode == 2
+    assert "use prune_node" in result.stderr
+
+
+def test_cli_next_rejects_pruned_root(tmp_path):
+    tree_path = tmp_path / "task.tree.json"
+    assert run_cli("init", "--title", "Root", "--out", str(tree_path)).returncode == 0
+    assert run_cli("prune", str(tree_path), "--id", "n1", "--evidence", "ruled out").returncode == 0
+
+    result = run_cli("next", str(tree_path))
+
+    assert result.returncode == 2
+    assert "no selectable frontier" in result.stderr
+
+
 def test_cli_path_prints_best_path_with_evidence(tmp_path):
     tree_path = tmp_path / "task.tree.json"
     assert run_cli("init", "--title", "Root", "--out", str(tree_path)).returncode == 0

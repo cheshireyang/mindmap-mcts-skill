@@ -124,3 +124,26 @@ def test_node_supports_structured_evidence_metadata():
     assert payload["nodes"][0]["source"] == "tests/test_login.py::test_timeout"
     assert payload["nodes"][0]["confidence"] == "high"
     assert restored.nodes[0].probe_type == "test"
+
+
+def test_tree_from_dict_rejects_non_numeric_params_with_mindmap_error():
+    payload = {
+        "version": 1,
+        "title": "Bad tree",
+        "root_id": "n1",
+        "params": {"exploration_c": "bad"},
+        "nodes": [
+            {
+                "id": "n1",
+                "parent": None,
+                "content": "Bad tree",
+                "type": "goal",
+                "state": "exploring",
+                "V": 0.5,
+                "N": 0,
+            }
+        ],
+    }
+
+    with pytest.raises(MindMapError, match="exploration_c must be numeric"):
+        tree_from_dict(payload)

@@ -92,6 +92,8 @@ def evaluate_node(
         raise MindMapError("value must be between 0 and 1")
     node = node_by_id(tree, node_id)
     chosen_state = state or ("verified" if value >= 0.85 else "exploring")
+    if chosen_state == "pruned":
+        raise MindMapError("use prune_node to prune nodes")
     updated = replace(
         node,
         V=float(value),
@@ -141,6 +143,8 @@ def ucb_score(parent_visits: int, child_value: float, child_visits: int, c: floa
 def select_frontier(tree: Tree) -> Node:
     current = node_by_id(tree, tree.root_id)
     while True:
+        if current.state == "pruned":
+            raise MindMapError(f"no selectable frontier: {current.id} is pruned")
         candidates = [child for child in children_of(tree, current.id) if child.state != "pruned"]
         if not candidates:
             return current
