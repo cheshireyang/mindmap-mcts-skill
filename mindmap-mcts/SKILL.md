@@ -9,10 +9,33 @@ Use this skill to keep complex work on a visible, evidence-backed reasoning tree
 
 ## Command Prefix
 
-Use the bundled CLI through this command prefix:
+Choose the command form that matches the current shell.
+
+Linux, macOS, WSL, or Git Bash:
 
 ```bash
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" --help
+```
+
+Cross-platform Python launcher:
+
+```bash
+python "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap.py" --help
+```
+
+Windows PowerShell:
+
+```powershell
+& "$env:USERPROFILE\.codex\skills\mindmap-mcts\scripts\mindmap.ps1" --help
+```
+
+If PowerShell execution policy blocks `.ps1` scripts, run the Python module directly after setting `PYTHONPATH`:
+
+```powershell
+$env:PYTHONPATH = "$env:USERPROFILE\.codex\skills\mindmap-mcts\scripts;$env:PYTHONPATH"
+$env:PYTHONIOENCODING = "utf-8"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+python -m mindmap_mcts.cli --help
 ```
 
 For repeated commands in one shell session, define:
@@ -21,7 +44,14 @@ For repeated commands in one shell session, define:
 alias mindmap='"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap"'
 ```
 
-If aliases are not preserved by the current shell call, use the explicit `"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap"` form.
+If aliases are not preserved by the current shell call, use the explicit launcher form for the current shell.
+
+On Windows, set UTF-8 output before rendering or showing trees that contain Chinese text:
+
+```powershell
+$env:PYTHONIOENCODING = "utf-8"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+```
 
 Never hand-edit rendered markdown as the truth source. The `.tree.json` file is the truth source; `.tree.md` is only a view.
 
@@ -33,6 +63,8 @@ Never hand-edit rendered markdown as the truth source. The `.tree.json` file is 
 ```bash
 "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" init --title "<task title>" --out <task-name>.tree.json
 ```
+
+The root node created by `init` is `n1`; use `--parent n1` for the first child. Do not use `root` unless a specific tree file already contains a node with that id.
 
 3. If a tree exists, inspect it:
 

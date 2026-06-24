@@ -16,7 +16,7 @@ rm -rf "$TARGET_DIR"
 cp -R "$REPO_ROOT/mindmap-mcts" "$TARGET_DIR"
 
 chmod +x "$TARGET_DIR/scripts/mindmap"
+chmod +x "$TARGET_DIR/scripts/mindmap.py"
 
 echo "Installed mindmap-mcts to $TARGET_DIR"
 "$TARGET_DIR/scripts/mindmap" --help
-

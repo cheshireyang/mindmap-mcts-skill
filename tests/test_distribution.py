@@ -31,6 +31,32 @@ def test_wrapper_script_runs_cli_help():
         assert command in result.stdout
 
 
+def test_python_launcher_runs_cli_help():
+    launcher = REPO_ROOT / "mindmap-mcts" / "scripts" / "mindmap.py"
+
+    result = run(["python3", str(launcher), "--help"])
+
+    assert result.returncode == 0, result.stderr
+    assert "MindMap-MCTS tree engine" in result.stdout
+    assert "render-html" in result.stdout
+
+
+def test_windows_launchers_document_python_module_and_utf8_setup():
+    cmd_launcher = REPO_ROOT / "mindmap-mcts" / "scripts" / "mindmap.cmd"
+    ps_launcher = REPO_ROOT / "mindmap-mcts" / "scripts" / "mindmap.ps1"
+
+    cmd_text = cmd_launcher.read_text(encoding="utf-8").lower()
+    ps_text = ps_launcher.read_text(encoding="utf-8").lower()
+
+    assert "pythonioencoding" in cmd_text
+    assert "pythonpath" in cmd_text
+    assert "-m mindmap_mcts.cli" in cmd_text
+    assert "outputencoding" in ps_text
+    assert "pythonioencoding" in ps_text
+    assert "pythonpath" in ps_text
+    assert "-m mindmap_mcts.cli" in ps_text
+
+
 def test_install_script_copies_skill_and_smoke_tests_cli(tmp_path):
     codex_home = tmp_path / "codex-home"
     install_script = REPO_ROOT / "install.sh"
@@ -39,8 +65,14 @@ def test_install_script_copies_skill_and_smoke_tests_cli(tmp_path):
 
     installed_skill = codex_home / "skills" / "mindmap-mcts"
     installed_wrapper = installed_skill / "scripts" / "mindmap"
+    installed_python_launcher = installed_skill / "scripts" / "mindmap.py"
+    installed_cmd_launcher = installed_skill / "scripts" / "mindmap.cmd"
+    installed_ps_launcher = installed_skill / "scripts" / "mindmap.ps1"
     assert result.returncode == 0, result.stderr
     assert installed_wrapper.exists()
+    assert installed_python_launcher.exists()
+    assert installed_cmd_launcher.exists()
+    assert installed_ps_launcher.exists()
     assert "Installed mindmap-mcts" in result.stdout
     assert "MindMap-MCTS tree engine" in result.stdout
 
@@ -50,6 +82,10 @@ def test_readme_documents_install_script_and_wrapper():
 
     assert "./install.sh" in readme
     assert "mindmap-mcts/scripts/mindmap --help" in readme
+    assert "python -m mindmap_mcts.cli" in readme
+    assert "PowerShell" in readme
+    assert "--parent n1" in readme
+    assert "UTF-8" in readme
 
 
 def test_readme_uses_generated_png_assets_and_preserves_legacy_svgs():
@@ -91,7 +127,10 @@ def test_skill_uses_wrapper_script_instead_of_long_pythonpath_commands():
     skill = (REPO_ROOT / "mindmap-mcts" / "SKILL.md").read_text(encoding="utf-8")
 
     assert "scripts/mindmap" in skill
-    assert "python3 -m mindmap_mcts.cli" not in skill
+    assert "python -m mindmap_mcts.cli" in skill
+    assert "PowerShell" in skill
+    assert "n1" in skill
+    assert "UTF-8" in skill
 
 
 def test_github_actions_runs_tests():

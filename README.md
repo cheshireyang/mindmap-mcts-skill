@@ -92,8 +92,37 @@ or:
 
 The skill includes a Python CLI under `mindmap-mcts/scripts`.
 
+Linux, macOS, WSL, or Git Bash:
+
 ```bash
 mindmap-mcts/scripts/mindmap --help
+```
+
+Cross-platform Python launcher:
+
+```bash
+python mindmap-mcts/scripts/mindmap.py --help
+```
+
+Windows PowerShell can use the native launcher, which sets `PYTHONPATH` and UTF-8 output before running the Python module:
+
+```powershell
+.\mindmap-mcts\scripts\mindmap.ps1 --help
+```
+
+If PowerShell execution policy blocks `.ps1` files, run the Python module directly:
+
+```powershell
+$env:PYTHONPATH = "$PWD\mindmap-mcts\scripts;$env:PYTHONPATH"
+$env:PYTHONIOENCODING = "utf-8"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+python -m mindmap_mcts.cli --help
+```
+
+Windows `cmd.exe` can use:
+
+```cmd
+mindmap-mcts\scripts\mindmap.cmd --help
 ```
 
 Create and inspect a tree:
@@ -103,6 +132,7 @@ mindmap-mcts/scripts/mindmap init \
   --title "Fix intermittent login timeout" \
   --out task.tree.json
 
+# The root node created by init is n1.
 mindmap-mcts/scripts/mindmap add task.tree.json \
   --parent n1 \
   --type hypothesis \
@@ -137,6 +167,17 @@ Structured evidence fields are optional. Use them when a score is backed by a co
 --probe-type test|grep|log|paper|code-read|user-input
 --source path/to/file.py:42
 --confidence low|medium|high
+```
+
+### Windows Notes
+
+- The tree root created by `init` is `n1`, not `root`.
+- Prefer `mindmap.ps1`, `mindmap.cmd`, `python mindmap-mcts/scripts/mindmap.py`, or `python -m mindmap_mcts.cli` in PowerShell. The Bash `mindmap` wrapper is for Unix shells, WSL, and Git Bash.
+- If Chinese output looks garbled in PowerShell, set UTF-8 before running commands:
+
+```powershell
+$env:PYTHONIOENCODING = "utf-8"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 ```
 
 ## Example
