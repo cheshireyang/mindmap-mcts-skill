@@ -57,7 +57,9 @@ mindmap-mcts-skill/
 
 ## Install
 
-Clone this repository and run the installer:
+Clone this repository and run the installer for your agent host.
+
+Codex:
 
 ```bash
 git clone git@github.com:cheshireyang/mindmap-mcts-skill.git
@@ -67,11 +69,24 @@ cd mindmap-mcts-skill
 
 Restart Codex so the new skill metadata is loaded.
 
+Claude Code:
+
+```bash
+git clone git@github.com:cheshireyang/mindmap-mcts-skill.git
+cd mindmap-mcts-skill
+./install-claude.sh
+```
+
+This installs the same skill folder to `${CLAUDE_HOME:-$HOME/.claude}/skills/mindmap-mcts`; the default Claude Code path is `~/.claude/skills/mindmap-mcts`. Restart Claude Code so the new skill metadata is loaded.
+
 Manual install is also just a directory copy:
 
 ```bash
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 cp -R mindmap-mcts "${CODEX_HOME:-$HOME/.codex}/skills/"
+
+mkdir -p "${CLAUDE_HOME:-$HOME/.claude}/skills"
+cp -R mindmap-mcts "${CLAUDE_HOME:-$HOME/.claude}/skills/"
 ```
 
 ## Use In Codex
@@ -86,6 +101,14 @@ or:
 
 ```text
 用 $mindmap-mcts 分析这个复杂问题：Transformer 当前有哪些缺陷？
+```
+
+## Use In Claude Code
+
+Install with `./install-claude.sh`, restart Claude Code, then ask for the same skill by name:
+
+```text
+Use $mindmap-mcts to explore this architecture tradeoff.
 ```
 
 ## Use The Bundled CLI Directly

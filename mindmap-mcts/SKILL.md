@@ -1,6 +1,6 @@
 ---
 name: mindmap-mcts
-description: Run a visible reasoning-tree workflow with lightweight MCTS for complex Codex tasks. Use when a task has multiple plausible hypotheses or designs, needs systematic debugging, requires option tradeoff exploration, involves repeated trial-and-error, or the user asks for a mindmap, reasoning tree, MCTS, visible exploration, branch evaluation, or evidence-backed problem solving.
+description: Run a visible reasoning-tree workflow with lightweight MCTS for complex Codex or Claude Code tasks. Use when a task has multiple plausible hypotheses or designs, needs systematic debugging, requires option tradeoff exploration, involves repeated trial-and-error, or the user asks for a mindmap, reasoning tree, MCTS, visible exploration, branch evaluation, or evidence-backed problem solving.
 ---
 
 # MindMap-MCTS
@@ -9,30 +9,50 @@ Use this skill to keep complex work on a visible, evidence-backed reasoning tree
 
 ## Command Prefix
 
-Choose the command form that matches the current shell.
+Choose the command form that matches the current shell. First set the skill directory for the host that loaded this skill.
+
+Codex on Unix shells:
+
+```bash
+export MINDMAP_MCTS_SKILL_DIR="${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts"
+```
+
+Claude Code on Unix shells:
+
+```bash
+export MINDMAP_MCTS_SKILL_DIR="${CLAUDE_HOME:-$HOME/.claude}/skills/mindmap-mcts"
+```
+
+Default install locations are `$HOME/.codex/skills/mindmap-mcts` for Codex and `$HOME/.claude/skills/mindmap-mcts` for Claude Code.
 
 Linux, macOS, WSL, or Git Bash:
 
 ```bash
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" --help
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" --help
 ```
 
 Cross-platform Python launcher:
 
 ```bash
-python "${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap.py" --help
+python "$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap.py" --help
 ```
 
 Windows PowerShell:
 
 ```powershell
-& "$env:USERPROFILE\.codex\skills\mindmap-mcts\scripts\mindmap.ps1" --help
+# Claude Code:
+$env:MINDMAP_MCTS_SKILL_DIR = "$env:USERPROFILE\.claude\skills\mindmap-mcts"
+
+# Codex:
+# $env:MINDMAP_MCTS_SKILL_DIR = "$env:USERPROFILE\.codex\skills\mindmap-mcts"
+
+& "$env:MINDMAP_MCTS_SKILL_DIR\scripts\mindmap.ps1" --help
 ```
 
 If PowerShell execution policy blocks `.ps1` scripts, run the Python module directly after setting `PYTHONPATH`:
 
 ```powershell
-$env:PYTHONPATH = "$env:USERPROFILE\.codex\skills\mindmap-mcts\scripts;$env:PYTHONPATH"
+$env:PYTHONPATH = "$env:MINDMAP_MCTS_SKILL_DIR\scripts;$env:PYTHONPATH"
 $env:PYTHONIOENCODING = "utf-8"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 python -m mindmap_mcts.cli --help
@@ -41,7 +61,7 @@ python -m mindmap_mcts.cli --help
 For repeated commands in one shell session, define:
 
 ```bash
-alias mindmap='"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap"'
+alias mindmap='"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap"'
 ```
 
 If aliases are not preserved by the current shell call, use the explicit launcher form for the current shell.
@@ -61,7 +81,7 @@ Never hand-edit rendered markdown as the truth source. The `.tree.json` file is 
 2. If no tree exists, create one:
 
 ```bash
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" init --title "<task title>" --out <task-name>.tree.json
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" init --title "<task title>" --out <task-name>.tree.json
 ```
 
 The root node created by `init` is `n1`; use `--parent n1` for the first child. Do not use `root` unless a specific tree file already contains a node with that id.
@@ -69,14 +89,14 @@ The root node created by `init` is `n1`; use `--parent n1` for the first child. 
 3. If a tree exists, inspect it:
 
 ```bash
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" show <task-name>.tree.json
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" show <task-name>.tree.json
 ```
 
 4. Render the readable view:
 
 ```bash
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render <task-name>.tree.json --out <task-name>.tree.md
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render-markmap <task-name>.tree.json --out <task-name>.markmap.html
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" render <task-name>.tree.json --out <task-name>.tree.md
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" render-markmap <task-name>.tree.json --out <task-name>.markmap.html
 ```
 
 Use `render-markmap` when the user wants a browser-based visual tree. It produces interactive HTML through Markmap's browser autoloader. The map starts with an `Exploration status` branch that shows best path, selected frontier, state counts, open frontier nodes, verified nodes, and pruned nodes. In the reasoning tree, completed exploration uses a green `✓`, partial exploration uses a yellow `◐`, and unopened frontier nodes use a gray `○`; no red cross is used. Node titles are bold black, and status stays immediately after the title, for example `**n11 事实性与幻觉** (V=0.90 N=1 verified)`. Use `render-html` only when a static offline fallback is preferable.
@@ -86,7 +106,7 @@ Use `render-markmap` when the user wants a browser-based visual tree. It produce
 1. Ask the CLI for the next recommended action:
 
 ```bash
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" next <task-name>.tree.json
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" next <task-name>.tree.json
 ```
 
 Use this to orient before making new changes to the tree.
@@ -94,13 +114,13 @@ Use this to orient before making new changes to the tree.
 2. Select the next frontier directly when you need only the node id:
 
 ```bash
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" select <task-name>.tree.json
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" select <task-name>.tree.json
 ```
 
 3. Expand the selected node with 2 or 3 child nodes. Children must be mutually exclusive, concrete, and verifiable.
 
 ```bash
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" add <task-name>.tree.json --parent <node-id> --type hypothesis --content "<specific hypothesis>"
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" add <task-name>.tree.json --parent <node-id> --type hypothesis --content "<specific hypothesis>"
 ```
 
 4. Evaluate each new child using the cheapest real probe available: read code, grep a symbol, run a focused test, inspect a log, or check a config.
@@ -108,7 +128,7 @@ Use this to orient before making new changes to the tree.
 5. Record value and evidence:
 
 ```bash
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" eval <task-name>.tree.json --id <node-id> --value <0-to-1> --evidence "<short evidence>" --probe-type <test|grep|log|paper|code-read|user-input> --source "<source pointer>" --confidence <low|medium|high>
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" eval <task-name>.tree.json --id <node-id> --value <0-to-1> --evidence "<short evidence>" --probe-type <test|grep|log|paper|code-read|user-input> --source "<source pointer>" --confidence <low|medium|high>
 ```
 
 Use `--probe-type`, `--source`, and `--confidence` when a score is backed by a concrete probe. Omit them only when there is no useful structured metadata.
@@ -116,24 +136,24 @@ Use `--probe-type`, `--source`, and `--confidence` when a score is backed by a c
 6. Prune disproven branches instead of deleting them:
 
 ```bash
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" prune <task-name>.tree.json --id <node-id> --evidence "<why this branch is ruled out>" --probe-type <test|grep|log|paper|code-read|user-input> --source "<source pointer>" --confidence <low|medium|high>
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" prune <task-name>.tree.json --id <node-id> --evidence "<why this branch is ruled out>" --probe-type <test|grep|log|paper|code-read|user-input> --source "<source pointer>" --confidence <low|medium|high>
 ```
 
 7. Backpropagate from evaluated nodes:
 
 ```bash
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" backprop <task-name>.tree.json --from <node-id>
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" backprop <task-name>.tree.json --from <node-id>
 ```
 
 8. Render and show the updated state:
 
 ```bash
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render <task-name>.tree.json --out <task-name>.tree.md
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render-html <task-name>.tree.json --out <task-name>.tree.html
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" render-markmap <task-name>.tree.json --out <task-name>.markmap.html
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" show <task-name>.tree.json
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" path <task-name>.tree.json
-"${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap" doctor <task-name>.tree.json
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" render <task-name>.tree.json --out <task-name>.tree.md
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" render-html <task-name>.tree.json --out <task-name>.tree.html
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" render-markmap <task-name>.tree.json --out <task-name>.markmap.html
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" show <task-name>.tree.json
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" path <task-name>.tree.json
+"$MINDMAP_MCTS_SKILL_DIR/scripts/mindmap" doctor <task-name>.tree.json
 ```
 
 ## Evaluation Scale

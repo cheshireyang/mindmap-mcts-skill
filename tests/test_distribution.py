@@ -90,10 +90,34 @@ def test_install_script_copies_skill_and_smoke_tests_cli(tmp_path):
     assert "MindMap-MCTS tree engine" in result.stdout
 
 
+def test_claude_install_script_copies_skill_and_smoke_tests_cli(tmp_path):
+    claude_home = tmp_path / "claude-home"
+    install_script = REPO_ROOT / "install-claude.sh"
+
+    result = run([str(install_script)], env={"CLAUDE_HOME": str(claude_home)})
+
+    installed_skill = claude_home / "skills" / "mindmap-mcts"
+    installed_wrapper = installed_skill / "scripts" / "mindmap"
+    installed_python_launcher = installed_skill / "scripts" / "mindmap.py"
+    installed_cmd_launcher = installed_skill / "scripts" / "mindmap.cmd"
+    installed_ps_launcher = installed_skill / "scripts" / "mindmap.ps1"
+    assert result.returncode == 0, result.stderr
+    assert installed_wrapper.exists()
+    assert installed_python_launcher.exists()
+    assert installed_cmd_launcher.exists()
+    assert installed_ps_launcher.exists()
+    assert "Installed mindmap-mcts for Claude Code" in result.stdout
+    assert "MindMap-MCTS tree engine" in result.stdout
+
+
 def test_readme_documents_install_script_and_wrapper():
     readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
 
     assert "./install.sh" in readme
+    assert "./install-claude.sh" in readme
+    assert "CLAUDE_HOME" in readme
+    assert "~/.claude/skills/mindmap-mcts" in readme
+    assert "Use In Claude Code" in readme
     assert "mindmap-mcts/scripts/mindmap --help" in readme
     assert "python -m mindmap_mcts.cli" in readme
     assert "PowerShell" in readme
@@ -144,6 +168,12 @@ def test_readme_and_repository_metadata_include_discovery_terms():
 def test_skill_uses_wrapper_script_instead_of_long_pythonpath_commands():
     skill = (REPO_ROOT / "mindmap-mcts" / "SKILL.md").read_text(encoding="utf-8")
 
+    assert "MINDMAP_MCTS_SKILL_DIR" in skill
+    assert "$HOME/.claude/skills/mindmap-mcts" in skill
+    assert "CODEX_HOME" in skill
+    assert "$HOME/.codex/skills/mindmap-mcts" in skill
+    assert skill.count("${CODEX_HOME:-$HOME/.codex}/skills/mindmap-mcts/scripts/mindmap") == 0
+    assert skill.count("$env:USERPROFILE\\.codex\\skills\\mindmap-mcts\\scripts") == 0
     assert "scripts/mindmap" in skill
     assert "python -m mindmap_mcts.cli" in skill
     assert "PowerShell" in skill
